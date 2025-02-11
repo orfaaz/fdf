@@ -31,19 +31,6 @@ int	main(void)
 	int mfd = open("./maps/test_maps/basictest.fdf", O_RDONLY);
 	map = parser(mfd);
 	close(mfd);
-	
-	// int i = 0;
-	// int j = 0;
-	// while (map->map[i])
-	// {
-	// 	while(map->map[i][j])
-	// 	{
-	// 		ft_printf("%c, ", map->map[i][j]);
-	// 		j++;
-	// 	}
-	// 	j = 0;
-	// 	i++;
-	// }
 
 	win.mlx = mlx_init();
 	win.win = mlx_new_window(win.mlx, 500, 500, "fdf_test");
@@ -55,3 +42,5 @@ int	main(void)
 	mlx_put_image_to_window(win.mlx, win.win, img.img, 0, 0);
 	mlx_loop(win.mlx);
 }
+
+

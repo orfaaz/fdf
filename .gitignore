@@ -1,6 +1,6 @@
 repo42_00/
 repo42_01/
-.vscode
+.vscode/
 .gdb_history
 *.o
 test

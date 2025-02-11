@@ -29,75 +29,61 @@
 #  define HEIGHT 400
 # endif
 
-typedef struct s_cmap
+typedef struct	s_map
 {
-	char	**map;
+	t_vtx	**map;
 	int		line_len;
 	int		lines;
-}				t_cmap;
+}				t_map;
 
-typedef struct	s_point
+//Coordinates structs.
+typedef struct	s_vtx
 {
-	float	x;
-	float	y;
-	float	z;
-}				t_point;
+	int		x;
+	int		y;
+	int		z;
+	char	*color;
+	//float	w;
+}				t_vtx;
 
-
-typedef struct	s_rotate
+typedef struct	s_isovtx
 {
-	int	rx;
-	int	ry;
-	int	rz;
-}				t_rotate;
+	int		x;
+	int		y;
+	char	*color;
+}				t_isovtx;
 
-typedef struct	s_translate
+typedef struct	s_isovector
+{
+	t_isovtx	a;
+	t_isovtx	b;
+	int			dx;
+	int			dy;
+}				t_isovector;
+
+typedef struct	s_transform
 {
 	int	tx;
 	int	ty;
-	int	tz;
-}				t_translate;
+	int	scale;
+}				t_transform;
 
-/* 3D orga
-
-w = 1920 h = 1080;
-aspect ratio = a = h / w
-foc = ?;
-
-chaque vtx : [x, y, z];
-chaque triangle : [vtx01, vtx02, vtx03];
-chaque face : triangle01, triangle02; (faces pas forcement necessaire pour l'instant)
-mesh : enssemble des faces
-
-projection
-float	ft_fov(int foc)
+//Mlx structs.
+typedef	struct	s_img
 {
-	float	ret;
+	void	*img;
+	char	*addr;
+	int		line_len;
+	int		bpp;
+	int		endian;
+}				t_img;
 
-	ret = 1 / (tan (fov / 2));
-	return (ret);
-}
-
-float	ft_q(int fclip, int nclip)
+typedef	struct	s_win
 {
-	float	ret;
-
-	ret = (fclip / (fclip - nclip);
-	return (ret);
-}
-
-coordinates projection formula:
-[afx / z, fy / z, zq - nclip q];
-(/z pour la persp?)
-matrice de projection: mult coord [x, y, z, 1] par
-[af, 0, 0,   0];
-[0 , f, 0,   0];
-[0 , 0, q,   1];
-[0 , 0,-ncq, 0];
-
- = [afx / z, fy / z, zq - nclip q, z];
- 
-*/
+	void	*mlx;
+	void	*win;
+	t_img	*img;
+}				t_win;
 
 t_map	*parser(int fd);
 #endif

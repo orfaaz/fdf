@@ -12,22 +12,6 @@
 
 #include "fdf.h"
 
-typedef	struct	s_img
-{
-	void	*img;
-	char	*addr;
-	int		line_len;
-	int		bpp;
-	int		endian;
-}				t_img;
-
-typedef	struct	s_win
-{
-	void	*mlx;
-	void	*win;
-	t_img	*img;
-}				t_win;
-
 void	display(char *map)
 {
 	t_win	*win;
@@ -38,6 +22,14 @@ void	display(char *map)
 	img->addr = mlx_get_data_addr(img->img, &img->bpp, 
 								&img->line_len, &img->endian);
 	
+}
+
+void	put_pxl(t_img *img, t_isovtx vtx)
+{
+	char	*dst;
+
+	dst = img->addr + (vtx->y * img->line_len + vtx->x * (img->bpp / 8));
+	*(unsigned int *)dst = vtx->color;
 }
 
 int	main(int ac, char **av)
