@@ -88,7 +88,7 @@ static void	assign_coordinates(t_map *map, char *strmap, int crdnts[2])
 	vtx->x = crdnts[0] * scale->scale;
 	vtx->y = crdnts[1] * scale->scale;
 	vtx->z = ft_atoi(strmap) * scale->scale;
-	while (!(*strmap == ' ' || *strmap == ','))//segfault
+	while (!(*strmap == ' ' || *strmap == ','))
 		strmap++;
 	if (*strmap == ',')
 		assign_color(vtx, ++strmap);
@@ -117,8 +117,9 @@ static void	char_to_vtx(t_map *map, char *strmap)
 			crdnts[1]++;
 		}
 		crdnts[0]++;
-		strmap++;
-		while (*strmap != ' ')
+		while (*strmap && *strmap != ' ')
+			strmap++;
+		while (*strmap && *strmap == ' ')
 			strmap++;
 	}
 }

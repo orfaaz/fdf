@@ -19,7 +19,7 @@ t_isovtx	*projection_iso(t_vtx *vtx, t_transform *trsfm)
 	iso = malloc(sizeof(t_isovtx));
 	if (!iso)
 		return (NULL);
-	iso->x = (vtx->x - vtx->y) * cos(0.523599);
+	iso->x = (vtx->x - vtx->y) * cos(0.523599);//segfault (not at first loop).
 	iso->x = iso->x + trsfm->tx;
 	iso->y = (vtx->x + vtx->y) * sin(0.523599) - vtx->z;
 	iso->y = iso->y + trsfm->ty;
