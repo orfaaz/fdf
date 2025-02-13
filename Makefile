@@ -1,10 +1,16 @@
 NAME = fdf
 
 SRC = fdf.c \
-	fdf_parser.c
+	fdf_parser.c \
+	fdf_utils.c	\
+	fdf_projection.c \
+#	fdf_drawline.c
 
 SRC_TEST = test01.c \
-	fdf_parser.c
+	fdf_parser.c \
+	fdf_utils.c	\
+	fdf_projection.c \
+	fdf_drawline.c
 
 LIBDIR = ../libft
 LIB = $(LIBDIR)/libft.a

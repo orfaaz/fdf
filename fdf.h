@@ -29,13 +29,6 @@
 #  define HEIGHT 400
 # endif
 
-typedef struct	s_map
-{
-	t_vtx	**map;
-	int		line_len;
-	int		lines;
-}				t_map;
-
 //Coordinates structs.
 typedef struct	s_vtx
 {
@@ -43,7 +36,6 @@ typedef struct	s_vtx
 	int		y;
 	int		z;
 	char	*color;
-	//float	w;
 }				t_vtx;
 
 typedef struct	s_isovtx
@@ -68,6 +60,15 @@ typedef struct	s_transform
 	int	scale;
 }				t_transform;
 
+typedef struct	s_map
+{
+	t_vtx		**map;
+	t_isovtx	**isomap;
+	t_transform	*trsfm;
+	int			line_len;
+	int			lines;
+}				t_map;
+
 //Mlx structs.
 typedef	struct	s_img
 {
@@ -85,5 +86,12 @@ typedef	struct	s_win
 	t_img	*img;
 }				t_win;
 
-t_map	*parser(int fd);
+t_map		*parser(int fd);
+t_isovtx	*projection_iso(t_vtx *vtx, t_transform *trsfm);
+t_transform	*set_transform(void);
+void		edge_parse(t_isovtx a, t_isovtx b, t_img img);
+void		put_pxl(t_img *img, t_isovtx *vtx);
+int			ft_abs(int n);
+int			ft_countwords(char *str, char stop);
+void		free_map(t_map *map);
 #endif

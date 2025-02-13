@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fdf_drawline.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: agamay <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/13 11:43:35 by agamay            #+#    #+#             */
+/*   Updated: 2025/02/13 11:43:37 by agamay           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 
 #include "fdf.h"
 
 //draws pixls on a vertical line. stepping one pixel aside when needed.
-void	steep_slope(t_isovector v, t_img img)
+static void	steep_edge(t_isovector v, t_img img)
 {
 	int	i;
 	int	step;
@@ -30,7 +42,7 @@ void	steep_slope(t_isovector v, t_img img)
 }
 
 //draws pixls on a horizontal line. stepping one pixel up when needed.
-void	gentle_slope(t_isovector v, t_img img)
+static void	gentle_edge(t_isovector v, t_img img)
 {
 	int	i;
 	int	up;
@@ -58,7 +70,7 @@ void	gentle_slope(t_isovector v, t_img img)
 }
 
 //checks the slope of the vector ab(dx, dy) to draw it right.
-void	drawslope_parse(t_isovtx a, t_isovtx b, t_img img)
+void	edge_parse(t_isovtx a, t_isovtx b, t_img img)
 {
 	t_isovector	v;
 	
@@ -67,8 +79,8 @@ void	drawslope_parse(t_isovtx a, t_isovtx b, t_img img)
 	v.dx = b.x - a.x;
 	v.dy = b.y - a.y;
 	if (ft_abs(dx) > ft_abs(dy))
-		gentle_slope(v, img);
+		gentle_edge(v, img);
 	else
-		steep_slope(v, img);
+		steep_edge(v, img);
 }
 

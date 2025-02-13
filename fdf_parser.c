@@ -12,21 +12,6 @@
 
 #include "fdf.h"
 
-// void	dbarr_free(char **arr)
-// {
-// 	int	size;
-
-// 	size = 0;
-// 	while (*arr)
-// 	{
-// 		free(*arr);
-// 		arr++;
-// 		size++;
-// 	}
-// 	free(arr - size);
-// }
-
-
 // char	**ft_addrow(char **orig, char *add)
 // {
 // 	char	**ret;
@@ -75,45 +60,45 @@
 // 	return (ret);
 // }
 
-void	free_map(t_map map)
+static void	assign_color(t_vtx *vtx, char *strmap)
 {
-	t_vtx	*vtx;
+	int	i;
 
-	while (map->map)
-	{
-		vtx = *(map->map);
-		free(vtx->color);
-		free(vtx);
-		map->map++;
-	}
-	free(map->map - map->lines);
+	i = strmap - ft_strchr(strmap, ' ');
+	vtx->color = malloc(sizeof(char) * (i + 1));
+	if (!vtx->color)
+		return ;
+	vtx->color[i] = '\0';
+	ft_strlcpy(vtx->color, strmap, i);
 }
 
 //assign the right coordinate to the t_vtx struct.
-void	assign_coordinates(t_map *map, char *c_map, int crdnts[2])
+static void	assign_coordinates(t_map *map, char *strmap, int crdnts[2])
 {
-	t_vtx	*vtx;
-	int		i;
+	t_vtx		*vtx;
+	t_transform	*scale;
+	int			i;
 
+	scale = map->trsfm;
 	i = crdnts[0] + crdnts[1] * map->line_len;
 	vtx = malloc(sizeof(t_vtx));
 	if (!vtx)
-		return ();
+		return ;
 	map->map[i] = vtx;
-	vtx->x = crdnts[0];
-	vtx->y = crdnts[1];
-	vtx->z = ft_atoi(c_map);
-	while (*c_map != ',' || *c_map != ' ')
-		c_map++;
-	if (*c_map == ',');
-		vtx->color = ft_strdup(++c_map, 8);
+	vtx->x = crdnts[0] * scale->scale;
+	vtx->y = crdnts[1] * scale->scale;
+	vtx->z = ft_atoi(strmap) * scale->scale;
+	while (!(*strmap == ' ' || *strmap == ','))//segfault
+		strmap++;
+	if (*strmap == ',')
+		assign_color(vtx, ++strmap);
 	else
-		vtx->color = ft_strdup("0xFFFFFF", 8);
+		assign_color(vtx, "0xFFFFFF ");
 }
 
 //converts the char* map from gnl to an array of structs 
 //containing (x, y, z) & color informations.
-void	char_to_vtx(t_map *map, char *c_map)
+static void	char_to_vtx(t_map *map, char *strmap)
 {
 	int crdnts[2];
 
@@ -121,19 +106,20 @@ void	char_to_vtx(t_map *map, char *c_map)
 	crdnts[1] = 0;
 	map->map = malloc(sizeof(t_vtx *) * (map->line_len * map->lines + 1));
 	if (!map->map)
-		return ();
+		return ;
 	map->map[map->lines] = NULL;
-	while (*c_map)
+	while (*strmap)
 	{
-		assign_coordinates(map, c_map, crdnts);
-		if (*c_map == '\n')
+		assign_coordinates(map, strmap, crdnts);
+		if (*strmap == '\n')
 		{
-			crndts[0] = 0;
+			crdnts[0] = 0;
 			crdnts[1]++;
 		}
-		crndts[0]++;
-		while (*c_map != ' ')
-			c_map++;
+		crdnts[0]++;
+		strmap++;
+		while (*strmap != ' ')
+			strmap++;
 	}
 }
 
@@ -148,18 +134,20 @@ t_map	*parser(int fd)
 	map = malloc(sizeof(t_map));
 	if (!map)
 		exit(EXIT_FAILURE);
+	map->trsfm = set_transform();
+	map->map = NULL;
+	map->isomap = NULL;
 	map->lines = 0;
 	join = NULL;
 	tmp = get_next_line(fd);
-	while (temp)
+	while (tmp)
 	{
 		join = ft_strjoin(join, tmp);
 		free(tmp);
 		tmp = get_next_line(fd);
 		map->lines++;
 	}
-	map->line_len = ft_strlen(*(map->map));
-	map->map = NULL;
+	map->line_len = ft_countwords(join, '\n');
 	char_to_vtx(map, join);
 	free(join);
 	return(map);

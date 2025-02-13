@@ -43,4 +43,3 @@ int	main(void)
 	mlx_loop(win.mlx);
 }
 
-
