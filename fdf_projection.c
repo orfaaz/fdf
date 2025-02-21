@@ -19,10 +19,10 @@ t_isovtx	*projection_iso(t_vtx *vtx, t_transform *trsfm)
 	iso = malloc(sizeof(t_isovtx));
 	if (!iso)
 		return (NULL);
-	iso->x = (vtx->x - vtx->y) * cos(0.523599);//segfault (not at first loop).
-	iso->x = iso->x + trsfm->tx;
-	iso->y = (vtx->x + vtx->y) * sin(0.523599) - vtx->z;
-	iso->y = iso->y + trsfm->ty;
+	iso->x = ((float)vtx->x - (float)vtx->y) * cos(0.523599);
+	iso->x = iso->x + (float)trsfm->tx;
+	iso->y = ((float)vtx->x + (float)vtx->y) * sin(0.523599) - (float)vtx->z;
+	iso->y = iso->y + (float)trsfm->ty;
 	iso->color = vtx->color;
 	return (iso);
 }

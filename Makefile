@@ -4,7 +4,8 @@ SRC = fdf.c \
 	fdf_parser.c \
 	fdf_utils.c	\
 	fdf_projection.c \
-#	fdf_drawline.c
+	fdf_drawline.c \
+	fdf_mlx.c
 
 SRC_TEST = test01.c \
 	fdf_parser.c \

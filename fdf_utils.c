@@ -12,11 +12,18 @@
 
 #include "fdf.h"
 
-int	ft_abs(int n)
+float	ft_abs(float n)
 {
 	if (n < 0)
 		n = -n;
 	return (n);
+}
+
+int	ft_round(float n)
+{
+	if ((int)n == (int)(n + 0.5))
+		return ((int)n);
+	return ((int)n + 1);
 }
 
 static int	ft_isspace3(const char c)

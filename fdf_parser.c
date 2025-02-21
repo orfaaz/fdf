@@ -64,7 +64,7 @@ static void	assign_color(t_vtx *vtx, char *strmap)
 {
 	int	i;
 
-	i = strmap - ft_strchr(strmap, ' ');
+	i = strmap - ft_strchr(strmap, ' ');//probleme si la couleur est suivie d'un '\n';
 	vtx->color = malloc(sizeof(char) * (i + 1));
 	if (!vtx->color)
 		return ;
@@ -88,10 +88,10 @@ static void	assign_coordinates(t_map *map, char *strmap, int crdnts[2])
 	vtx->x = crdnts[0] * scale->scale;
 	vtx->y = crdnts[1] * scale->scale;
 	vtx->z = ft_atoi(strmap) * scale->scale;
-	while (!(*strmap == ' ' || *strmap == ','))
+	while (*strmap && !(*strmap == ' ' && *strmap == ','))
 		strmap++;
 	if (*strmap == ',')
-		assign_color(vtx, ++strmap);
+		assign_color(vtx, ++strmap);//issue
 	else
 		assign_color(vtx, "0xFFFFFF ");
 }
@@ -104,20 +104,21 @@ static void	char_to_vtx(t_map *map, char *strmap)
 
 	crdnts[0] = 0;
 	crdnts[1] = 0;
-	map->map = malloc(sizeof(t_vtx *) * (map->line_len * map->lines + 1));
+	map->map = malloc(sizeof(t_vtx *) * (map->vtc_nb + 1));
 	if (!map->map)
 		return ;
-	map->map[map->lines] = NULL;
-	while (*strmap)
+	map->map[map->vtc_nb] = NULL;
+	while (crdnts[0] < map->line_len || crdnts[1] < map->lines - 1)
 	{
-		assign_coordinates(map, strmap, crdnts);
 		if (*strmap == '\n')
 		{
 			crdnts[0] = 0;
 			crdnts[1]++;
+			strmap++;
 		}
+		assign_coordinates(map, strmap, crdnts);
 		crdnts[0]++;
-		while (*strmap && *strmap != ' ')
+		while (*strmap && (*strmap != ' ' && *strmap != '\n'))
 			strmap++;
 		while (*strmap && *strmap == ' ')
 			strmap++;
@@ -149,6 +150,7 @@ t_map	*parser(int fd)
 		map->lines++;
 	}
 	map->line_len = ft_countwords(join, '\n');
+	map->vtc_nb = map->lines * map->line_len;
 	char_to_vtx(map, join);
 	free(join);
 	return(map);
