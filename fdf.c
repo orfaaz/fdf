@@ -57,6 +57,12 @@ t_win	*set_win(void)
 //unsets mlx and frees everything.
 void	end(t_win *win, t_map *map)
 {
+	t_img	*img;
+
+	img = win->img;
+	mlx_destroy_image(win->mlx, img->img);
+	free(img);
+	mlx_destroy_window(win->mlx, win->win);
 	mlx_destroy_display(win->mlx);
 	free(win->mlx);
 	free(win);
@@ -89,7 +95,7 @@ int	main(int ac, char **av)
 	win->trsfm = map->trsfm;
 	win->map = map;
 	display(map, win);
-	mlx_loop_hook(win->mlx, &no_event, win);
+	mlx_hook(win->win, 17, 0, close_win, win);
 	mlx_key_hook(win->win, &hook_parser, win);
 	mlx_loop(win->mlx);
 	end(win, map);

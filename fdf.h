@@ -98,6 +98,7 @@ void		put_pxl(t_img *img, t_isovtx *vtx, unsigned int color);
 void		drawline(t_isovtx a, t_isovtx b, t_img *img);
 void		screen_reset(t_img *img);
 int			no_event(void *data);
+int			close_win(t_win *win);
 int			hook_parser(int keysym, void *data);
 void		dbarr_free(void **arr);
 float		ft_abs(float n);

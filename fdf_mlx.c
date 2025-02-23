@@ -21,12 +21,13 @@ int	no_event(void *data)
 //unsets mlx window, breaking out of the mlx loop.
 int	close_win(t_win *win)
 {
-	t_img	*img;
+	// t_img	*img;
 
-	img = win->img;
-	mlx_destroy_image(win->mlx, img->img);
-	free(img);
-	mlx_destroy_window(win->mlx, win->win);
+	// img = win->img;
+	// mlx_destroy_image(win->mlx, img->img);
+	// free(img);
+	// mlx_destroy_window(win->mlx, win->win);
+	mlx_loop_end(win->mlx);
 	return (0);
 }
 
