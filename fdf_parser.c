@@ -66,8 +66,6 @@ static void	assign_coordinates(t_map *map, char *strmap, int crdnts[2])
 	vtx->x = crdnts[0] * scale->scale;
 	vtx->y = crdnts[1] * scale->scale;
 	vtx->z = ft_atoi(strmap) * scale->scale;
-	while (*strmap && !(*strmap == ' ' && *strmap == ','))
-		strmap++;
 }
 
 //converts the char* map from gnl to an array of structs 
@@ -92,6 +90,8 @@ static void	char_to_vtx(t_map *map, char *strmap)
 		}
 		assign_coordinates(map, strmap, crdnts);
 		crdnts[0]++;
+		while (*strmap && *strmap == ' ')
+			strmap++;
 		while (*strmap && (*strmap != ' ' && *strmap != '\n'))
 			strmap++;
 		while (*strmap && *strmap == ' ')
