@@ -12,64 +12,42 @@
 
 #include "fdf.h"
 
-// char	**ft_addrow(char **orig, char *add)
-// {
-// 	char	**ret;
-// 	int		i;
-
-// 	i = 0;
-// 	ret = orig;
-// 	while (ret++)
-// 		i++;
-// 	ret = malloc(sizeof(char *) * i + 2);
-// 	while (orig)
-// 		*ret++ = ft_strdup(*orig++);
-// 	*ret++ = add;
-// 	*ret = NULL;
-// 	ret = ret - (i + 1);
-// 	dbarr_free(orig - i);
-// 	return (ret);
-// }
-
-//utils. removes a given char from a str in a new str.
-// char	*ft_strdelchar(char *str, int c)
-// {
-// 	char	*ret;
-// 	char	*tmp;
-// 	int		i;
-
-// 	i = 0;
-// 	tmp = str;
-// 	while(tmp)
-// 	{
-// 		if (*tmp == c)
-// 			i++;
-// 		tmp++;
-// 	}
-// 	ret = malloc(sizeof(char) * ((ft_strlen(str) - i) + 1));
-// 	if (!ret)
-// 		return (NULL);
-// 	tmp = ret;
-// 	while (str)
-// 	{
-// 		if (*str != c)
-// 			*tmp++ = *str;
-// 		str++;
-// 	}
-// 	tmp = '\0';
-// 	return (ret);
-// }
-
-static void	assign_color(t_vtx *vtx, char *strmap)
+t_transform	*set_transform(void)
 {
-	int	i;
+	t_transform	*trsfm;
 
-	i = strmap - ft_strchr(strmap, ' ');//probleme si la couleur est suivie d'un '\n';
-	vtx->color = malloc(sizeof(char) * (i + 1));
-	if (!vtx->color)
-		return ;
-	vtx->color[i] = '\0';
-	ft_strlcpy(vtx->color, strmap, i);
+	trsfm = malloc(sizeof(t_transform));
+	trsfm->scale = 10;
+	trsfm->prev = 10;
+	trsfm->tx = WIDTH / 2;
+	trsfm->ty = HEIGHT / 2;
+	return (trsfm);
+}
+
+int	is_map_rectangle(t_map *map, char *strmap, int fd)
+{
+	char	*tmp;
+	int		line_len;
+	int		i;
+
+	i = 0;
+	tmp = strmap;
+	line_len = ft_countwords(strmap, '\n');
+	while (++i < map->lines)
+	{
+		while (*tmp != '\n')
+			tmp++;
+		if (line_len != ft_countwords(++tmp, '\n'))
+		{
+			free(map->trsfm);
+			free(map);
+			free(strmap);
+			close(fd);
+			ft_putstr_fd("map must be rectangle", 2);
+			exit (EXIT_FAILURE);
+		}
+	}
+	return (line_len);
 }
 
 //assign the right coordinate to the t_vtx struct.
@@ -90,17 +68,13 @@ static void	assign_coordinates(t_map *map, char *strmap, int crdnts[2])
 	vtx->z = ft_atoi(strmap) * scale->scale;
 	while (*strmap && !(*strmap == ' ' && *strmap == ','))
 		strmap++;
-	if (*strmap == ',')
-		assign_color(vtx, ++strmap);//issue
-	else
-		assign_color(vtx, "0xFFFFFF ");
 }
 
 //converts the char* map from gnl to an array of structs 
-//containing (x, y, z) & color informations.
+//containing (x, y, z) informations. (colors are ignored).
 static void	char_to_vtx(t_map *map, char *strmap)
 {
-	int crdnts[2];
+	int	crdnts[2];
 
 	crdnts[0] = 0;
 	crdnts[1] = 0;
@@ -125,7 +99,7 @@ static void	char_to_vtx(t_map *map, char *strmap)
 	}
 }
 
-//Reads .fdf doc. Creates a struct containing a **struuct_vtx of coordinates
+//Reads .fdf doc. Creates a struct containing a **struct_vtx of coordinates
 //counts w and l of map.
 t_map	*parser(int fd)
 {
@@ -144,14 +118,14 @@ t_map	*parser(int fd)
 	tmp = get_next_line(fd);
 	while (tmp)
 	{
-		join = ft_strjoin(join, tmp);
+		join = ft_strjoin_free(join, tmp);
 		free(tmp);
 		tmp = get_next_line(fd);
 		map->lines++;
 	}
-	map->line_len = ft_countwords(join, '\n');
+	map->line_len = is_map_rectangle(map, join, fd);
 	map->vtc_nb = map->lines * map->line_len;
 	char_to_vtx(map, join);
 	free(join);
-	return(map);
+	return (map);
 }

@@ -6,51 +6,11 @@
 /*   By: agamay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 16:33:50 by agamay            #+#    #+#             */
-/*   Updated: 2025/01/28 17:17:32 by agamay           ###   ########.fr       */
+/*   Updated: 2025/02/23 14:56:46 by agamay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
-
-void	to_iso(t_map *map)
-{
-	int	i;
-
-	i = -1;
-	map->isomap = malloc(sizeof(t_isovtx *) * (map->vtc_nb + 1));
-	if (!map->isomap)
-		return ;
-	map->isomap[map->vtc_nb] = NULL;
-	while (++i < map->vtc_nb)
-	{
-		map->isomap[i] = projection_iso(map->map[i], map->trsfm);
-	}
-}
-
-void	put_pxl(t_img *img, t_isovtx *vtx, unsigned int color)
-{
-	char	*dst;
-
-	if (vtx->y >= 0 && vtx->y <= HEIGHT && vtx->x >= 0 && vtx->x <= WIDTH)
-	{
-		dst = img->addr + (ft_round(vtx->y) * img->line_len + ft_round(vtx->x) * (img->bpp / 8));
-		//*(unsigned int *)dst = *(unsigned int *)vtx->color;
-		*(unsigned int *)dst = color;
-	}
-}
-void	screen_reset(t_img *img)
-{
-	t_isovtx	black;
-	int			i;
-
-	i = -1;
-	black.y = 1;
-	while (++i < HEIGHT * WIDTH - 1)
-	{
-		black.x = i;
-		put_pxl(img, &black, 0);
-	}
-}
 
 //blacks out screen, draw vertices, then edges, then pushes image;
 void	display(t_map *map, t_win *win)
@@ -58,12 +18,13 @@ void	display(t_map *map, t_win *win)
 	t_img		*img;
 	int			i;
 
+	to_iso(map);
 	img = win->img;
 	screen_reset(img);
 	i = -1;
 	while (++i < map->vtc_nb)
 	{
-		put_pxl(img, map->isomap[i], 0xA2D8A0);//vert 0xA2D8A0
+		put_pxl(img, map->isomap[i], 0xDD9090);
 	}
 	i = -1;
 	while (++i < map->vtc_nb)
@@ -76,6 +37,7 @@ void	display(t_map *map, t_win *win)
 	mlx_put_image_to_window(win->mlx, win->win, img->img, 0, 0);
 }
 
+//sets up everything the mlx needs.
 t_win	*set_win(void)
 {
 	t_win	*win;
@@ -86,10 +48,22 @@ t_win	*set_win(void)
 	win->mlx = mlx_init();
 	win->win = mlx_new_window(win->mlx, WIDTH, HEIGHT, "fdf");
 	img->img = mlx_new_image(win->mlx, WIDTH, HEIGHT);
-	img->addr = mlx_get_data_addr(img->img, &img->bpp, 
-								&img->line_len, &img->endian);
+	img->addr = mlx_get_data_addr(img->img, &img->bpp,
+			&img->line_len, &img->endian);
 	win->img = img;
 	return (win);
+}
+
+//unsets mlx and frees everything.
+void	end(t_win *win, t_map *map)
+{
+	mlx_destroy_display(win->mlx);
+	free(win->mlx);
+	free(win);
+	dbarr_free((void **)map->map);
+	dbarr_free((void **)map->isomap);
+	free(map->trsfm);
+	free(map);
 }
 
 int	main(int ac, char **av)
@@ -99,17 +73,24 @@ int	main(int ac, char **av)
 	t_map	*map;
 
 	if (ac != 2 || !ft_strnstr(av[1], ".fdf", ft_strlen(av[1])))
+	{
+		ft_putstr_fd("expected argument: one .fdf file", 2);
 		exit(EXIT_FAILURE);
+	}
 	fd = open(av[1], O_RDONLY);
 	if (fd == -1)
+	{
+		perror("opening map failed");
 		exit(EXIT_FAILURE);
+	}
 	map = parser(fd);
-	to_iso(map);
+	close(fd);
 	win = set_win();
 	win->trsfm = map->trsfm;
+	win->map = map;
 	display(map, win);
 	mlx_loop_hook(win->mlx, &no_event, win);
 	mlx_key_hook(win->win, &hook_parser, win);
 	mlx_loop(win->mlx);
-	free(map);
+	end(win, map);
 }

@@ -71,3 +71,68 @@ matrice de projection: mult coord [x, y, z, 1] par
  = [afx / z, fy / z, zq - nclip q, z];
  
 */
+
+//abandonned fct
+
+
+// char	**ft_addrow(char **orig, char *add)
+// {
+// 	char	**ret;
+// 	int		i;
+
+// 	i = 0;
+// 	ret = orig;
+// 	while (ret++)
+// 		i++;
+// 	ret = malloc(sizeof(char *) * i + 2);
+// 	while (orig)
+// 		*ret++ = ft_strdup(*orig++);
+// 	*ret++ = add;
+// 	*ret = NULL;
+// 	ret = ret - (i + 1);
+// 	dbarr_free(orig - i);
+// 	return (ret);
+// }
+
+//utils. removes a given char from a str in a new str.
+// char	*ft_strdelchar(char *str, int c)
+// {
+// 	char	*ret;
+// 	char	*tmp;
+// 	int		i;
+
+// 	i = 0;
+// 	tmp = str;
+// 	while(tmp)
+// 	{
+// 		if (*tmp == c)
+// 			i++;
+// 		tmp++;
+// 	}
+// 	ret = malloc(sizeof(char) * ((ft_strlen(str) - i) + 1));
+// 	if (!ret)
+// 		return (NULL);
+// 	tmp = ret;
+// 	while (str)
+// 	{
+// 		if (*str != c)
+// 			*tmp++ = *str;
+// 		str++;
+// 	}
+// 	tmp = '\0';
+// 	return (ret);
+// }
+
+//color managment
+
+// static void	assign_color(t_vtx *vtx, char *strmap)
+// {
+// 	int	i;
+
+// 	i = strmap - ft_strchr(strmap, ' ');//probleme si la couleur est suivie d'un '\n';
+// 	vtx->color = malloc(sizeof(char) * (i + 1));
+// 	if (!vtx->color)
+// 		return ;
+// 	vtx->color[i] = '\0';
+// 	ft_strlcpy(vtx->color, strmap, i);
+// }

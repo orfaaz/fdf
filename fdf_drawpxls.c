@@ -1,25 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fdf_drawline.c                                     :+:      :+:    :+:   */
+/*   fdf_drawpxls.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: agamay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 11:43:35 by agamay            #+#    #+#             */
-/*   Updated: 2025/02/13 11:43:37 by agamay           ###   ########.fr       */
+/*   Updated: 2025/02/23 14:56:56 by agamay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "fdf.h"
 
+void	put_pxl(t_img *img, t_isovtx *vtx, unsigned int color)
+{
+	char	*dst;
 
-//prepares values to draw the .
+	if (vtx->y >= 0 && vtx->y < HEIGHT
+		&& vtx->x >= 0 && ft_round(vtx->x) < WIDTH)
+	{
+		dst = img->addr + (ft_round(vtx->y) * img->line_len
+				+ ft_round(vtx->x) * (img->bpp / 8));
+		*(unsigned int *)dst = color;
+	}
+}
+
+//draws a straight line between 2D vtc a and b.
 void	drawline(t_isovtx a, t_isovtx b, t_img *img)
 {
 	t_isovector	v;
-	int	i;
-	
+	int			i;
+
 	v.a = &a;
 	v.b = &b;
 	v.dx = b.x - a.x;
@@ -39,7 +50,28 @@ void	drawline(t_isovtx a, t_isovtx b, t_img *img)
 	{
 		v.a->x = v.a->x + v.xinc;
 		v.a->y = v.a->y + v.yinc;
-		put_pxl(img, v.a, 0xFFFFFF);
+		put_pxl(img, v.a, 0xA2D8A0);
 		i++;
+	}
+}
+
+//blacks out screen before drawing on it again.
+void	screen_reset(t_img *img)
+{
+	t_isovtx	black;
+	int			i;
+
+	i = -1;
+	black.y = -1;
+	black.x = -1;
+	while (++i < HEIGHT * WIDTH)
+	{
+		black.x++;
+		if (i % WIDTH == 0)
+		{
+			black.y++;
+			black.x = 0;
+		}
+		put_pxl(img, &black, 0);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: agamay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 16:34:06 by agamay            #+#    #+#             */
-/*   Updated: 2025/01/28 16:34:07 by agamay           ###   ########.fr       */
+/*   Updated: 2025/02/23 14:57:09 by agamay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,34 +20,31 @@
 # include <math.h>
 # include <stdlib.h>
 # include <unistd.h>
-# include <stdio.h> //perror
-# include <string.h> //strerror
+# include <stdio.h>
 # include <fcntl.h>
 
 # ifndef WIDTH
-#  define WIDTH 600
+#  define WIDTH 800
 # endif
 # ifndef HEIGHT
-#  define HEIGHT 400
+#  define HEIGHT 600
 # endif
 
 //Coordinates structs.
-typedef struct	s_vtx
+typedef struct s_vtx
 {
 	int		x;
 	int		y;
 	int		z;
-	char	*color;//unused
 }				t_vtx;
 
-typedef struct	s_isovtx
+typedef struct s_isovtx
 {
 	float		x;
 	float		y;
-	char	*color;//unused
 }				t_isovtx;
 
-typedef struct	s_isovector
+typedef struct s_isovector
 {
 	t_isovtx	*a;
 	t_isovtx	*b;
@@ -57,15 +54,15 @@ typedef struct	s_isovector
 	float		dy;
 }				t_isovector;
 
-typedef struct	s_transform
+typedef struct s_transform
 {
 	int	tx;
 	int	ty;
 	int	scale;
-	//int	z_scale;
+	int	prev;
 }				t_transform;
 
-typedef struct	s_map
+typedef struct s_map
 {
 	t_vtx		**map;
 	t_isovtx	**isomap;
@@ -76,7 +73,7 @@ typedef struct	s_map
 }				t_map;
 
 //Mlx structs.
-typedef	struct	s_img
+typedef struct s_img
 {
 	void	*img;
 	char	*addr;
@@ -85,23 +82,24 @@ typedef	struct	s_img
 	int		endian;
 }				t_img;
 
-typedef	struct	s_win
+typedef struct s_win
 {
 	void		*mlx;
 	void		*win;
 	t_img		*img;
+	t_map		*map;
 	t_transform	*trsfm;
 }				t_win;
 
 t_map		*parser(int fd);
-t_isovtx	*projection_iso(t_vtx *vtx, t_transform *trsfm);
-t_transform	*set_transform(void);
-void		drawline(t_isovtx a, t_isovtx b, t_img *img);
+void		to_iso(t_map *map);
+void		display(t_map *map, t_win *win);
 void		put_pxl(t_img *img, t_isovtx *vtx, unsigned int color);
+void		drawline(t_isovtx a, t_isovtx b, t_img *img);
+void		screen_reset(t_img *img);
 int			no_event(void *data);
 int			hook_parser(int keysym, void *data);
+void		dbarr_free(void **arr);
 float		ft_abs(float n);
 int			ft_round(float n);
-int			ft_countwords(char *str, char stop);
-void		free_map(t_map *map);
 #endif
